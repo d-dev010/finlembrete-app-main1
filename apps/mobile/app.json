@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "FinLembrete",
+    "slug": "finlembrete",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "scheme": "finlembrete",
+    "android": {
+      "package": "com.finlembrete.app",
+      "permissions": [
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE",
+        "SCHEDULE_EXACT_ALARM"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-notifications",
+        {
+          "color": "#4DB896",
+          "sounds": [
+            "./assets/sounds/chaching.wav"
+          ]
+        }
+      ],
+      "expo-sqlite"
+    ]
+  }
+}
