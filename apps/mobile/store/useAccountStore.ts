@@ -195,10 +195,13 @@ export async function markItemAsPaid(item: HomeItem): Promise<void> {
   }
 
   // Cancela notificações pendentes
-  const toCancel = [
-    payment.notificationIdBefore,
-    payment.notificationIdDay,
-  ].filter(Boolean) as string[];
+  const toCancel: string[] = [];
+  if (payment.notificationIdBefore) {
+    toCancel.push(...payment.notificationIdBefore.split(','));
+  }
+  if (payment.notificationIdDay) {
+    toCancel.push(...payment.notificationIdDay.split(','));
+  }
   if (toCancel.length) await cancelBillNotifications(toCancel);
 
   // Marca como pago
@@ -224,8 +227,12 @@ export async function removeAccount(accountId: string): Promise<void> {
   const payments = await Storage.getPaymentsByAccountId(accountId);
   const ids: string[] = [];
   for (const p of payments) {
-    if (p.notificationIdBefore) ids.push(p.notificationIdBefore);
-    if (p.notificationIdDay) ids.push(p.notificationIdDay);
+    if (p.notificationIdBefore) {
+      ids.push(...p.notificationIdBefore.split(','));
+    }
+    if (p.notificationIdDay) {
+      ids.push(...p.notificationIdDay.split(','));
+    }
   }
   if (ids.length) await cancelBillNotifications(ids);
   await Storage.deleteAccount(accountId);

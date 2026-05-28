@@ -61,37 +61,52 @@ export async function scheduleBillNotifications(
   dueDateStr: string,
 ): Promise<{ dayBeforeId: string; dayOfId: string }> {
   const dueDate  = new Date(dueDateStr + 'T00:00:00');
-  const morning  = { hours: 9, minutes: 0, seconds: 0 };
+  const times = [
+    { hours: 9, minutes: 0, seconds: 0 },
+    { hours: 14, minutes: 0, seconds: 0 },
+    { hours: 20, minutes: 0, seconds: 0 },
+  ];
 
-  // --- Notificação: 1 dia antes ---
-  const dayBeforeId = await Notifications.scheduleNotificationAsync({
-    content: {
-      title: '📅 Conta vence amanhã',
-      body: `Amanhã vence a conta: ${name}`,
-      sound: SOUND_FILE,           // iOS
-      data: { accountId, channelId: CHANNEL_ID },
-    },
-    trigger: {
-      type: Notifications.SchedulableTriggerInputTypes.DATE,
-      date: set(subDays(dueDate, 1), morning),
-    },
-  });
+  // --- Notificações: 1 dia antes ---
+  const dayBeforeIds: string[] = [];
+  for (const time of times) {
+    const id = await Notifications.scheduleNotificationAsync({
+      content: {
+        title: '📅 Conta vence amanhã',
+        body: `Amanhã vence a conta: ${name}`,
+        sound: SOUND_FILE,           // iOS
+        data: { accountId, channelId: CHANNEL_ID },
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DATE,
+        date: set(subDays(dueDate, 1), time),
+      },
+    });
+    dayBeforeIds.push(id);
+  }
 
-  // --- Notificação: no dia do vencimento ---
-  const dayOfId = await Notifications.scheduleNotificationAsync({
-    content: {
-      title: '🔔 Conta vence hoje',
-      body: `Hoje vence a conta: ${name}`,
-      sound: SOUND_FILE,           // iOS
-      data: { accountId, channelId: CHANNEL_ID },
-    },
-    trigger: {
-      type: Notifications.SchedulableTriggerInputTypes.DATE,
-      date: set(dueDate, morning),
-    },
-  });
+  // --- Notificações: no dia do vencimento ---
+  const dayOfIds: string[] = [];
+  for (const time of times) {
+    const id = await Notifications.scheduleNotificationAsync({
+      content: {
+        title: '🔔 Conta vence hoje',
+        body: `Hoje vence a conta: ${name}`,
+        sound: SOUND_FILE,           // iOS
+        data: { accountId, channelId: CHANNEL_ID },
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DATE,
+        date: set(dueDate, time),
+      },
+    });
+    dayOfIds.push(id);
+  }
 
-  return { dayBeforeId, dayOfId };
+  return {
+    dayBeforeId: dayBeforeIds.join(','),
+    dayOfId: dayOfIds.join(','),
+  };
 }
 
 /**

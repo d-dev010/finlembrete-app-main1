@@ -28,7 +28,7 @@ export default function HomeScreen() {
   const [items, setItems] = useState<HomeItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  
+
   // O aplicativo agora foca no mês atual de forma fixa, simplificando a navegação
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth(); // 0-based
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
     right: theme.spacing.lg,
-    bottom: 40, // <-- AJUSTE MANUAL DO BOTÃO AQUI (padrão anterior era theme.spacing.lg = 24)
+    bottom: 40,
     width: 60,
     height: 60,
     borderRadius: theme.borderRadius.lg,
